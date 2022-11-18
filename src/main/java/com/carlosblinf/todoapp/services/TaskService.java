@@ -3,12 +3,15 @@ package com.carlosblinf.todoapp.services;
 import com.carlosblinf.todoapp.dto.TaskInDto;
 import com.carlosblinf.todoapp.entities.Task;
 import com.carlosblinf.todoapp.entities.TaskStatus;
+import com.carlosblinf.todoapp.exceptions.TodoExceptions;
 import com.carlosblinf.todoapp.mappers.TaskInDTOToTask;
 import com.carlosblinf.todoapp.repositories.TaskRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -29,7 +32,12 @@ public class TaskService {
     }
 
     public Task findById(Long id){
-        return this.taskRepository.findById(id).get();
+        Optional<Task> optionalTask = this.taskRepository.findById(id);
+        if(optionalTask.isEmpty()) {
+            throw new TodoExceptions("Task not found", HttpStatus.NOT_FOUND);
+        }
+
+        return optionalTask.get();
     }
 
     public Task update(Long id, TaskInDto taskInDto){
