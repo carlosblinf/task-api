@@ -61,6 +61,9 @@ public class TaskService {
 
     public Task changeStatus(Long id, TaskStatus status){
         Task task = this.findById(id);
+        if (status.equals(task.getTaskStatus()))
+            return task;
+
         task.setTaskStatus(status);
 
         if (status.equals(TaskStatus.COMPLETED))
