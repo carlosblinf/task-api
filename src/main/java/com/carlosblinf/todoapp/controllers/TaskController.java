@@ -5,10 +5,14 @@ import com.carlosblinf.todoapp.dto.TaskInDto;
 import com.carlosblinf.todoapp.entities.Task;
 import com.carlosblinf.todoapp.entities.TaskStatus;
 import com.carlosblinf.todoapp.services.TaskService;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +36,12 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> store(@RequestBody TaskInDto taskInDTO){
+    public ResponseEntity<Task> store(@Valid @RequestBody TaskInDto taskInDTO, BindingResult result){
+        if (result.hasErrors()){
+            return (ResponseEntity<Task>) this.response
+                    .errorResponse(result, HttpStatus.BAD_REQUEST);
+        }
+
         return (ResponseEntity<Task>) this.response
                 .createResponse("Task created successfully",this.taskService.save(taskInDTO));
     }
